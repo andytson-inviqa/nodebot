@@ -1,0 +1,24 @@
+{
+  "name": "nodebot",
+  "version": "1.0.0",
+  "description": "node.js bot for vindinium",
+  "main": "bot.js",
+  "dependencies": {
+    "vindinium-client": "^2.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eddichen/nodebot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eddichen/nodebot/issues"
+  },
+  "homepage": "https://github.com/eddichen/nodebot#readme"
+}
