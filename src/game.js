@@ -38,28 +38,23 @@ class Board {
     {
         this.tiles = {}
         this.board = []
-        const boardCells = splitString(board.tiles, board.size * GC.TILE_WIDTH).map(row => splitString(row, GC.TILE_WIDTH))
+        const boardCells = splitString(board.tiles, GC.TILE_WIDTH)
 
-        for (let x in boardCells) {
-            const row = []
-            for (let y in boardCells[x]) {
-                const pos = {x: parseInt(x, 10), y: parseInt(y, 10)}
-                const contents = boardCells[pos.x][pos.y];
-                const tile = {
-                    pos: pos,
-                    cost: 1,
-                    type: contents[0],
-                    owner: [GC.MINE, GC.HERO].includes(contents[0]) && contents[1] != '-' ? contents[1] : null
-                }
-                row[y] = tile
-                if ([GC.MINE, GC.TAVERN, GC.HERO].includes(tile.type)) {
-                    if (!this.tiles.hasOwnProperty(tile.type)) [
-                        this.tiles[tile.type] = []
-                    ]
-                    this.tiles[tile.type].push(tile)
-                }
+        for (let i = 0; i < boardCells.length; i++) {
+            const contents = boardCells[i];
+            const tile = {
+                pos: {x: Math.floor(i / board.size), y: i % board.size},
+                cost: 1,
+                type: contents[0],
+                owner: [GC.MINE, GC.HERO].includes(contents[0]) && contents[1] != '-' ? contents[1] : null
             }
-            this.board[x] = row
+            this.board.push(tile)
+            if ([GC.MINE, GC.TAVERN, GC.HERO].includes(tile.type)) {
+                if (!this.tiles.hasOwnProperty(tile.type)) [
+                    this.tiles[tile.type] = []
+                ]
+                this.tiles[tile.type].push(tile)
+            }
         }
         
         this.size = board.size
@@ -77,62 +72,16 @@ class Board {
         if (pos.x < 0 || pos.x >= this.size || pos.y < 0 || pos.y >= this.size) {
             return {type: GC.WALL}
         }
-        const contents = this.board[pos.x][pos.y];
-        return this.board[pos.x][pos.y]
-    }
-
-    positions(callback)
-    {
-        let accumulator = []
-        for (let x in this.board) {
-            for (let y in this.board) {
-                const pos = {x: parseInt(x, 10), y: parseInt(y, 10)}
-                if (callback(pos)) {
-                    accumulator.push(pos)
-                }
-            }
-        }
-        return accumulator
-    }
-
-    reduce(callback, initial)
-    {
-        let accumulator = initial
-        for (let x in this.board) {
-            for (let y in this.board) {
-                accumulator = callback(accumulator, this.atPosition({x: parseInt(x, 10), y: parseInt(y, 10)}))
-            }
-        }
-        return accumulator
+        return this.board[pos.x * this.size + pos.y]
     }
 
     nearestTilesToHero(game, hero, tileTypes)
     {
-        const self = this
-        return this.reduce((accumulator, tile) => {
-            if (!tileTypes.includes(tile.type)) {
-                return accumulator
-            }
-
-            if (!accumulator.has(tile.type)) {
-                accumulator.set(tile.type, [])
-            }
-
-            switch (tile.type) {
-                case GC.HERO:
-                case GC.MINE:
-                    tile.hero = game.heroes[tile.owner]
-                    if (tile.owner === hero.id) {
-                        break
-                    }
-                case GC.TAVERN:
-                    accumulator.get(tile.type).push(tile)
-                    break;
-            }
+        const targets = tileTypes.reduce((accumulator, type) => {
+            accumulator.set(type, this.tiles[type].filter(tile => !tile.owner || tile.owner !== hero.id))
             return accumulator
-        },new Map()).map(function (targets) {
-            return self.nearestTargetsToHero(targets, hero)
-        })
+        }, new Map())
+        return targets.map((targets, type) => this.nearestTargetsToHero(targets, hero))
     }
 
     nearestTargetsToHero(targets, hero)
