@@ -27,4 +27,4 @@ e.TILE_TYPES = [
 
 e.DIRECTIONS = [e.NORTH, e.EAST, e.SOUTH, e.WEST]
 
-module.exports = e
+export default e

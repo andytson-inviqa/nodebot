@@ -1,6 +1,6 @@
 "use strict";
 
-const GC = require('./game-constants.js')
+import GC from './game-constants'
 
 class PathFinder
 {
@@ -78,4 +78,4 @@ class PathFinder
     }
 }
 
-module.exports = PathFinder
+export {PathFinder}

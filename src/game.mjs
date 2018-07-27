@@ -1,7 +1,7 @@
 "use strict";
 
-const GC = require('./game-constants.js')
-const PathFinder = require('./pathfinder.js')
+import GC from './game-constants'
+import {PathFinder} from './pathfinder'
 
 Map.prototype.map = function(f) {
     const ctx = this
@@ -122,7 +122,4 @@ function splitString (string, size) {
 	return string.match(re)
 }
 
-module.exports = {
-    Game: Game,
-    Board: Board
-}
+export {Game, Board}
